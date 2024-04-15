@@ -174,7 +174,7 @@ client.on('interactionCreate', async (interaction) => {
 	// !! Statistics
 	if (interaction.commandName === 'User Statistics') {
 		// Options and Predefinitions
-		const targetMember = interaction.targetUser;
+		const targetMember = await interaction.targetUser.fetch({ force: true });
 		const avatarURL = targetMember.displayAvatarURL({ extension: 'png' });
 
 		// Get Data
@@ -182,10 +182,13 @@ client.on('interactionCreate', async (interaction) => {
 
 		// Build Embed
 		const embed = new EmbedBuilder()
-			.setTitle(`${targetMember.username}'s Pat Stats`)
+			.setTitle(`${targetMember.displayName}'s Pat Stats`)
 			.setThumbnail(avatarURL)
-			.setColor('#9c825e')
-			.addFields({ name: 'Pats', value: userStats?.patCounter.toString() || '0', inline: true }, { name: 'Baps', value: userStats?.bapCounter.toString() || '0', inline: true });
+			.setColor(`#9c825e`)
+			.addFields(
+				{ name: 'Pats', value: userStats?.patCounter.toString() || '0', inline: true },
+				{ name: 'Baps', value: userStats?.bapCounter.toString() || '0', inline: true }
+			);
 
 		interaction.reply({ embeds: [embed] });
 	}
