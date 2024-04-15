@@ -8,7 +8,7 @@ const Canvas = require('canvas');
 const path = require('path');
 
 // Discord JS
-const { Client, IntentsBitField } = require('discord.js');
+const { Client, IntentsBitField, EmbedBuilder } = require('discord.js');
 const TOKEN = process.env.DISCORD_TOKEN;
 
 const client = new Client({
@@ -18,10 +18,17 @@ const client = new Client({
 	},
 });
 
+// Mongoose
+client.mongoose = require('./core/mongoLoader');
+client.mongoose.init();
+
+const { patData } = require('./models/index');
+
 client.on('ready', () => console.log(`${client.user.username} is online`));
 client.on('error', (e) => console.error(e));
 
 client.on('interactionCreate', async (interaction) => {
+	// !! Headpats
 	if (interaction.commandName === 'Headpat') {
 		// Options and Predefinitions
 		const targetMember = interaction.targetUser;
@@ -34,6 +41,9 @@ client.on('interactionCreate', async (interaction) => {
 		await interaction.reply({
 			files: [{ name: 'headpat.gif', attachment: headPats }],
 		});
+
+		// Update DB
+		await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { patCounter: 1 } }, { upsert: true, new: true });
 
 		//Generate PetPet Function
 		async function generatePetPet(avatarURL, options = {}) {
@@ -74,13 +84,7 @@ client.on('interactionCreate', async (interaction) => {
 
 				if (i == petGifCache.length) petGifCache.push(await Canvas.loadImage(path.resolve(__dirname, `./imgs/pats/pet${i}.gif`)));
 
-				ctx.drawImage(
-					avatar,
-					options.resolution * offsetX,
-					options.resolution * offsetY,
-					options.resolution * width,
-					options.resolution * height
-				);
+				ctx.drawImage(avatar, options.resolution * offsetX, options.resolution * offsetY, options.resolution * width, options.resolution * height);
 				ctx.drawImage(petGifCache[i], 0, 0, options.resolution, options.resolution);
 
 				encoder.addFrame(ctx);
@@ -91,6 +95,7 @@ client.on('interactionCreate', async (interaction) => {
 		}
 	}
 
+	// !! HeadBap
 	if (interaction.commandName === 'Headbap') {
 		// Options and Predefinitions
 		const targetMember = interaction.targetUser;
@@ -103,6 +108,9 @@ client.on('interactionCreate', async (interaction) => {
 		await interaction.reply({
 			files: [{ name: 'headbaps.gif', attachment: headPats }],
 		});
+
+		// Update DB
+		await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { bapCounter: 1 } }, { upsert: true, new: true });
 
 		//Generate PetPet Function
 		async function generateBapBap(avatarURL, options = {}) {
@@ -143,13 +151,7 @@ client.on('interactionCreate', async (interaction) => {
 
 				if (i == petGifCache.length) petGifCache.push(await Canvas.loadImage(path.resolve(__dirname, `./imgs/baps/bap${i}.gif`)));
 
-				ctx.drawImage(
-					avatar,
-					options.resolution * offsetX,
-					options.resolution * offsetY,
-					options.resolution * width,
-					options.resolution * height
-				);
+				ctx.drawImage(avatar, options.resolution * offsetX, options.resolution * offsetY, options.resolution * width, options.resolution * height);
 				ctx.drawImage(petGifCache[i], 0, 0, options.resolution, options.resolution);
 
 				encoder.addFrame(ctx);
@@ -160,12 +162,32 @@ client.on('interactionCreate', async (interaction) => {
 		}
 	}
 
+	// !! Avatar
 	if (interaction.commandName === 'Get Avatar') {
 		// Options and Predefinitions
 		const targetMember = interaction.targetUser;
 		const avatarURL = targetMember.displayAvatarURL();
 
 		interaction.reply(avatarURL);
+	}
+
+	// !! Statistics
+	if (interaction.commandName === 'User Statistics') {
+		// Options and Predefinitions
+		const targetMember = interaction.targetUser;
+		const avatarURL = targetMember.displayAvatarURL({ extension: 'png' });
+
+		// Get Data
+		const userStats = await patData.findOne({ userId: targetMember.id });
+
+		// Build Embed
+		const embed = new EmbedBuilder()
+			.setTitle(`${targetMember.username}'s Pat Stats`)
+			.setThumbnail(avatarURL)
+			.setColor('#9c825e')
+			.addFields({ name: 'Pats', value: userStats.patCounter.toString() || '0', inline: true }, { name: 'Baps', value: userStats.bapCounter.toString() || '0', inline: true });
+
+		interaction.reply({ embeds: [embed] });
 	}
 });
 
