@@ -185,7 +185,7 @@ client.on('interactionCreate', async (interaction) => {
 			.setTitle(`${targetMember.username}'s Pat Stats`)
 			.setThumbnail(avatarURL)
 			.setColor('#9c825e')
-			.addFields({ name: 'Pats', value: userStats.patCounter.toString() || '0', inline: true }, { name: 'Baps', value: userStats.bapCounter.toString() || '0', inline: true });
+			.addFields({ name: 'Pats', value: userStats?.patCounter.toString() || '0', inline: true }, { name: 'Baps', value: userStats?.bapCounter.toString() || '0', inline: true });
 
 		interaction.reply({ embeds: [embed] });
 	}
