@@ -5,11 +5,19 @@ const userSchema = Schema({
 		type: String,
 		required: true,
 	},
-	patCounter: {
+	patsGiven: {
 		type: Number,
 		default: 0,
 	},
-	bapCounter: {
+	patsReceived: {
+		type: Number,
+		default: 0,
+	},
+	bapsGiven: {
+		type: Number,
+		default: 0,
+	},
+	bapsReceived: {
 		type: Number,
 		default: 0,
 	},

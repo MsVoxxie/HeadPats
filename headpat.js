@@ -43,7 +43,8 @@ client.on('interactionCreate', async (interaction) => {
 		});
 
 		// Update DB
-		await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { patCounter: 1 } }, { upsert: true, new: true });
+		await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { patsReceived: 1 } }, { upsert: true, new: true });
+		await patData.findOneAndUpdate({ userId: interaction.user.id }, { $inc: { patsGiven: 1 } }, { upsert: true, new: true });
 
 		//Generate PetPet Function
 		async function generatePetPet(avatarURL, options = {}) {
@@ -110,7 +111,8 @@ client.on('interactionCreate', async (interaction) => {
 		});
 
 		// Update DB
-		await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { bapCounter: 1 } }, { upsert: true, new: true });
+		await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { bapsReceived: 1 } }, { upsert: true, new: true });
+		await patData.findOneAndUpdate({ userId: interaction.user.id }, { $inc: { bapsGiven: 1 } }, { upsert: true, new: true });
 
 		//Generate PetPet Function
 		async function generateBapBap(avatarURL, options = {}) {
@@ -186,8 +188,11 @@ client.on('interactionCreate', async (interaction) => {
 			.setThumbnail(avatarURL)
 			.setColor(`#9c825e`)
 			.addFields(
-				{ name: 'Pats', value: userStats?.patCounter.toString() || '0', inline: true },
-				{ name: 'Baps', value: userStats?.bapCounter.toString() || '0', inline: true }
+				{ name: 'Received Pats', value: userStats?.patsReceived.toString() || '0', inline: true },
+				{ name: 'Received Baps', value: userStats?.bapsReceived.toString() || '0', inline: true },
+				{ name: '_ _', value: '_ _', inline: false },
+				{ name: 'Given Pats', value: userStats?.patsGiven.toString() || '0', inline: true },
+				{ name: 'Given Baps', value: userStats?.bapsGiven.toString() || '0', inline: true }
 			);
 
 		interaction.reply({ embeds: [embed] });
