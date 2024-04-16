@@ -23,6 +23,7 @@ client.mongoose = require('./core/mongoLoader');
 client.mongoose.init();
 
 const { patData } = require('./models/index');
+const userData = require('./models/schemas/userData');
 
 client.on('ready', () => console.log(`${client.user.username} is online`));
 client.on('error', (e) => console.error(e));
@@ -43,8 +44,17 @@ client.on('interactionCreate', async (interaction) => {
 		});
 
 		// Update DB
-		await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { patsReceived: 1 } }, { upsert: true, new: true });
-		await patData.findOneAndUpdate({ userId: interaction.user.id }, { $inc: { patsGiven: 1 } }, { upsert: true, new: true });
+		if (interaction.guild.id) {
+			await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { patsReceived: 1 }, $addToSet: { userGuilds: interaction.guild.id } }, { upsert: true, new: true });
+			await patData.findOneAndUpdate(
+				{ userId: interaction.user.id },
+				{ $inc: { patsGiven: 1 }, $addToSet: { userGuilds: interaction.guild.id } },
+				{ upsert: true, new: true }
+			);
+		} else {
+			await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { patsReceived: 1 } }, { upsert: true, new: true });
+			await patData.findOneAndUpdate({ userId: interaction.user.id }, { $inc: { patsGiven: 1 } }, { upsert: true, new: true });
+		}
 
 		//Generate PetPet Function
 		async function generatePetPet(avatarURL, options = {}) {
@@ -111,8 +121,18 @@ client.on('interactionCreate', async (interaction) => {
 		});
 
 		// Update DB
-		await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { bapsReceived: 1 } }, { upsert: true, new: true });
-		await patData.findOneAndUpdate({ userId: interaction.user.id }, { $inc: { bapsGiven: 1 } }, { upsert: true, new: true });
+		if (interaction.guild.id) {
+			await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { bapsReceived: 1 }, $addToSet: { userGuilds: interaction.guild.id } }, { upsert: true, new: true });
+			await patData.findOneAndUpdate(
+				{ userId: interaction.user.id },
+				{ $inc: { bapsGiven: 1 }, $addToSet: { userGuilds: interaction.guild.id } },
+				{ upsert: true, new: true }
+			);
+		} else {
+			await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { bapsReceived: 1 } }, { upsert: true, new: true });
+			await patData.findOneAndUpdate({ userId: interaction.user.id }, { $inc: { bapsGiven: 1 } }, { upsert: true, new: true });
+		}
+		bapsGiven;
 
 		//Generate PetPet Function
 		async function generateBapBap(avatarURL, options = {}) {
@@ -186,6 +206,7 @@ client.on('interactionCreate', async (interaction) => {
 		const embed = new EmbedBuilder()
 			.setTitle(`${targetMember.displayName}'s Pat Stats`)
 			.setThumbnail(avatarURL)
+			.setTimestamp()
 			.setColor(`#9c825e`)
 			.addFields(
 				{ name: 'Received Pats', value: userStats?.patsReceived.toString() || '0', inline: true },
@@ -193,6 +214,36 @@ client.on('interactionCreate', async (interaction) => {
 				{ name: '_ _', value: '_ _', inline: false },
 				{ name: 'Given Pats', value: userStats?.patsGiven.toString() || '0', inline: true },
 				{ name: 'Given Baps', value: userStats?.bapsGiven.toString() || '0', inline: true }
+			);
+
+		interaction.reply({ embeds: [embed] });
+	}
+
+	// !! Leaderboard
+	if (interaction.commandName === 'leaderboard') {
+		// Return if not in a guild.
+		if (!interaction.inGuild()) return interaction.reply({ content: 'This command is only intended for guilds.', ephemeral: true });
+
+		// Fetch db data
+		const patsReceived = await userData.find({ userGuilds: interaction.guild.id }).sort({ patsReceived: -1 }).limit(5);
+		const patsGiven = await userData.find({ userGuilds: interaction.guild.id }).sort({ patsGiven: -1 }).limit(5);
+		const bapsReceived = await userData.find({ userGuilds: interaction.guild.id }).sort({ bapsReceived: -1 }).limit(5);
+		const bapsGiven = await userData.find({ userGuilds: interaction.guild.id }).sort({ bapsGiven: -1 }).limit(5);
+
+		console.log(patsReceived);
+
+		// Build Embed
+		const embed = new EmbedBuilder()
+			.setTitle(`${interaction.guild.name}'s Pat Leaderboard`)
+			.setThumbnail(interaction.guild.iconURL())
+			.setTimestamp()
+			.setColor(`#9c825e`)
+			.addFields(
+				{ name: 'Received Pats', value: patsReceived.map((m) => `<@${m.userId}> | ${m.patsReceived}`).join('\n'), inline: true },
+				{ name: 'Given Pats', value: patsGiven.map((m) => `<@${m.userId}> | ${m.patsGiven}`).join('\n'), inline: true },
+				{ name: '_ _', value: '_ _', inline: false },
+				{ name: 'Received Baps', value: bapsReceived.map((m) => `<@${m.userId}> | ${m.bapsReceived}`).join('\n'), inline: true },
+				{ name: 'Given Baps', value: bapsGiven.map((m) => `<@${m.userId}> | ${m.bapsGiven}`).join('\n'), inline: true }
 			);
 
 		interaction.reply({ embeds: [embed] });

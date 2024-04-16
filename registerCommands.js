@@ -3,13 +3,14 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Discordjs
-const { ContextMenuCommandBuilder, ApplicationCommandType, REST, Routes } = require('discord.js');
+const { ContextMenuCommandBuilder, ApplicationCommandType, REST, Routes, SlashCommandBuilder } = require('discord.js');
 
 const commandsData = [
 	new ContextMenuCommandBuilder().setName('Headpat').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('Headbap').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('Get Avatar').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('User Statistics').setType(ApplicationCommandType.User),
+	new SlashCommandBuilder().setName('leaderboard').setDescription('Who is the pattiest?').setDMPermission(false),
 ];
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN);

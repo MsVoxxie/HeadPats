@@ -21,6 +21,10 @@ const userSchema = Schema({
 		type: Number,
 		default: 0,
 	},
+	userGuilds: {
+		type: Array,
+		required: true,
+	},
 });
 
 module.exports = model('userData', userSchema);
