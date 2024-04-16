@@ -44,7 +44,7 @@ client.on('interactionCreate', async (interaction) => {
 		});
 
 		// Update DB
-		if (interaction.guild.id) {
+		if (interaction?.guild?.id) {
 			await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { patsReceived: 1 }, $addToSet: { userGuilds: interaction.guild.id } }, { upsert: true, new: true });
 			await patData.findOneAndUpdate(
 				{ userId: interaction.user.id },
@@ -121,7 +121,7 @@ client.on('interactionCreate', async (interaction) => {
 		});
 
 		// Update DB
-		if (interaction.guild.id) {
+		if (interaction?.guild?.id) {
 			await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { bapsReceived: 1 }, $addToSet: { userGuilds: interaction.guild.id } }, { upsert: true, new: true });
 			await patData.findOneAndUpdate(
 				{ userId: interaction.user.id },
@@ -223,14 +223,12 @@ client.on('interactionCreate', async (interaction) => {
 	if (interaction.commandName === 'leaderboard') {
 		// Return if not in a guild.
 		if (!interaction.inGuild()) return interaction.reply({ content: 'This command is only intended for guilds.', ephemeral: true });
-
+		if (!interaction?.guild?.id) return interaction.reply({ content: 'Unable to retrieve guild info...', ephemeral: true });
 		// Fetch db data
 		const patsReceived = await userData.find({ userGuilds: interaction.guild.id }).sort({ patsReceived: -1 }).limit(5);
 		const patsGiven = await userData.find({ userGuilds: interaction.guild.id }).sort({ patsGiven: -1 }).limit(5);
 		const bapsReceived = await userData.find({ userGuilds: interaction.guild.id }).sort({ bapsReceived: -1 }).limit(5);
 		const bapsGiven = await userData.find({ userGuilds: interaction.guild.id }).sort({ bapsGiven: -1 }).limit(5);
-
-		console.log(patsReceived);
 
 		// Build Embed
 		const embed = new EmbedBuilder()
