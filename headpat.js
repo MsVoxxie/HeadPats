@@ -237,11 +237,11 @@ client.on('interactionCreate', async (interaction) => {
 			.setTimestamp()
 			.setColor(`#9c825e`)
 			.addFields(
-				{ name: 'Received Pats', value: patsReceived.map((m) => `<@${m.userId}> | ${m.patsReceived}`).join('\n'), inline: true },
-				{ name: 'Given Pats', value: patsGiven.map((m) => `<@${m.userId}> | ${m.patsGiven}`).join('\n'), inline: true },
+				{ name: 'Received Pats', value: patsReceived.map((m) => `<@${m.userId}> | ${m.patsReceived.toString() || '0'}`).join('\n'), inline: true },
+				{ name: 'Given Pats', value: patsGiven.map((m) => `<@${m.userId}> | ${m.patsGiven.toString() || '0'}`).join('\n'), inline: true },
 				{ name: '_ _', value: '_ _', inline: false },
-				{ name: 'Received Baps', value: bapsReceived.map((m) => `<@${m.userId}> | ${m.bapsReceived}`).join('\n'), inline: true },
-				{ name: 'Given Baps', value: bapsGiven.map((m) => `<@${m.userId}> | ${m.bapsGiven}`).join('\n'), inline: true }
+				{ name: 'Received Baps', value: bapsReceived.map((m) => `<@${m.userId}> | ${m.bapsReceived.toString() || '0'}`).join('\n'), inline: true },
+				{ name: 'Given Baps', value: bapsGiven.map((m) => `<@${m.userId}> | ${m.bapsGiven.toString() || '0'}`).join('\n'), inline: true }
 			);
 
 		interaction.reply({ embeds: [embed] });
