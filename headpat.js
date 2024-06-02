@@ -33,7 +33,8 @@ client.on('interactionCreate', async (interaction) => {
 	if (interaction.commandName === 'Headpat') {
 		// Options and Predefinitions
 		const targetMember = interaction.targetUser;
-		const avatarURL = targetMember.displayAvatarURL({ extension: 'png' });
+		const fetchedMember = await interaction?.guild?.members.fetch(targetMember.id);
+		const avatarURL = fetchedMember.displayAvatarURL({ extension: 'png' }) || targetMember.displayAvatarURL({ extension: 'png' });
 
 		// Generate Headpats
 		const headPats = await generatePetPet(avatarURL, { resolution: 128, delay: 25, backgroundColor: null });
@@ -110,7 +111,8 @@ client.on('interactionCreate', async (interaction) => {
 	if (interaction.commandName === 'Headbap') {
 		// Options and Predefinitions
 		const targetMember = interaction.targetUser;
-		const avatarURL = targetMember.displayAvatarURL({ extension: 'png' });
+		const fetchedMember = await interaction?.guild?.members.fetch(targetMember.id);
+		const avatarURL = fetchedMember.displayAvatarURL({ extension: 'png' }) || targetMember.displayAvatarURL({ extension: 'png' });
 
 		// Generate Headpats
 		const headPats = await generateBapBap(avatarURL, { resolution: 128, delay: 25, backgroundColor: null });
@@ -132,7 +134,6 @@ client.on('interactionCreate', async (interaction) => {
 			await patData.findOneAndUpdate({ userId: targetMember.id }, { $inc: { bapsReceived: 1 } }, { upsert: true, new: true });
 			await patData.findOneAndUpdate({ userId: interaction.user.id }, { $inc: { bapsGiven: 1 } }, { upsert: true, new: true });
 		}
-		bapsGiven;
 
 		//Generate PetPet Function
 		async function generateBapBap(avatarURL, options = {}) {
@@ -188,7 +189,8 @@ client.on('interactionCreate', async (interaction) => {
 	if (interaction.commandName === 'Get Avatar') {
 		// Options and Predefinitions
 		const targetMember = interaction.targetUser;
-		const avatarURL = targetMember.displayAvatarURL();
+		const fetchedMember = await interaction?.guild?.members.fetch(targetMember.id);
+		const avatarURL = fetchedMember.displayAvatarURL({ extension: 'png' }) || targetMember.displayAvatarURL({ extension: 'png' });
 
 		interaction.reply(avatarURL);
 	}
