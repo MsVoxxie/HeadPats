@@ -34,7 +34,7 @@ client.on('interactionCreate', async (interaction) => {
 		// Options and Predefinitions
 		const targetMember = interaction.targetUser;
 		const fetchedMember = await interaction?.guild?.members.fetch(targetMember.id);
-		const avatarURL = fetchedMember.displayAvatarURL({ extension: 'png' }) || targetMember.displayAvatarURL({ extension: 'png' });
+		const avatarURL = fetchedMember?.displayAvatarURL({ extension: 'png' }) || targetMember.displayAvatarURL({ extension: 'png' });
 
 		// Generate Headpats
 		const headPats = await generatePetPet(avatarURL, { resolution: 128, delay: 25, backgroundColor: null });
@@ -112,7 +112,7 @@ client.on('interactionCreate', async (interaction) => {
 		// Options and Predefinitions
 		const targetMember = interaction.targetUser;
 		const fetchedMember = await interaction?.guild?.members.fetch(targetMember.id);
-		const avatarURL = fetchedMember.displayAvatarURL({ extension: 'png' }) || targetMember.displayAvatarURL({ extension: 'png' });
+		const avatarURL = fetchedMember?.displayAvatarURL({ extension: 'png' }) || targetMember.displayAvatarURL({ extension: 'png' });
 
 		// Generate Headpats
 		const headPats = await generateBapBap(avatarURL, { resolution: 128, delay: 25, backgroundColor: null });
@@ -190,7 +190,7 @@ client.on('interactionCreate', async (interaction) => {
 		// Options and Predefinitions
 		const targetMember = interaction.targetUser;
 		const fetchedMember = await interaction?.guild?.members.fetch(targetMember.id);
-		const avatarURL = fetchedMember.displayAvatarURL({ extension: 'png' }) || targetMember.displayAvatarURL({ extension: 'png' });
+		const avatarURL = fetchedMember?.displayAvatarURL({ extension: 'png' }) || targetMember.displayAvatarURL({ extension: 'png' });
 
 		interaction.reply(avatarURL);
 	}
