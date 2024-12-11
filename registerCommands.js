@@ -8,6 +8,7 @@ const { ContextMenuCommandBuilder, ApplicationCommandType, REST, Routes, SlashCo
 const commandsData = [
 	new ContextMenuCommandBuilder().setName('Headpat').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('Headbap').setType(ApplicationCommandType.User),
+	new ContextMenuCommandBuilder().setName('Noted').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('Get Avatar').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('User Statistics').setType(ApplicationCommandType.User),
 	new SlashCommandBuilder().setName('leaderboard').setDescription('Who is the pattiest?').setDMPermission(false),

@@ -135,7 +135,7 @@ client.on('interactionCreate', async (interaction) => {
 			await patData.findOneAndUpdate({ userId: interaction.user.id }, { $inc: { bapsGiven: 1 } }, { upsert: true, new: true });
 		}
 
-		//Generate PetPet Function
+		//Generate BapBap Function
 		async function generateBapBap(avatarURL, options = {}) {
 			//Definitions
 			const FRAMES = 4;
@@ -173,6 +173,69 @@ client.on('interactionCreate', async (interaction) => {
 				const offsetY = 1 - height - 0.08;
 
 				if (i == petGifCache.length) petGifCache.push(await Canvas.loadImage(path.resolve(__dirname, `./imgs/baps/bap${i}.gif`)));
+
+				ctx.drawImage(avatar, options.resolution * offsetX, options.resolution * offsetY, options.resolution * width, options.resolution * height);
+				ctx.drawImage(petGifCache[i], 0, 0, options.resolution, options.resolution);
+
+				encoder.addFrame(ctx);
+			}
+
+			encoder.finish();
+			return encoder.out.getData();
+		}
+	}
+
+	// !! Noted
+	if (interaction.commandName === 'Noted') {
+		// Options and Predefinitions
+		const targetMember = interaction.targetUser;
+		const fetchedMember = await interaction?.guild?.members.fetch(targetMember.id);
+		const avatarURL = fetchedMember?.displayAvatarURL({ extension: 'png' }) || targetMember.displayAvatarURL({ extension: 'png' });
+
+		// Generate Headpats
+		const headPats = await generateNoted(avatarURL, { resolution: 288, delay: 25, backgroundColor: null });
+
+		// Send it
+		await interaction.reply({
+			files: [{ name: 'noted.gif', attachment: headPats }],
+		});
+
+		//Generate Noted Function
+		async function generateNoted(avatarURL, options = {}) {
+			//Definitions
+			const FRAMES = 16;
+
+			const petGifCache = [];
+
+			// Create GIF encoder
+			const encoder = new GIFEncoder(options.resolution, options.resolution);
+
+			encoder.start();
+			encoder.setRepeat(0);
+			encoder.setDelay(options.delay);
+			encoder.setTransparent();
+
+			// Create canvas and its context
+			const canvas = Canvas.createCanvas(options.resolution, options.resolution);
+			const ctx = canvas.getContext('2d');
+
+			const avatar = await Canvas.loadImage(avatarURL);
+
+			// Loop and create each frame
+			for (let i = 0; i < FRAMES; i++) {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+				if (options.backgroundColor) {
+					ctx.fillStyle = options.backgroundColor;
+					ctx.fillRect(0, 0, canvas.width, canvas.height);
+				}
+
+				const width = 0.9;
+				const height = 0.9;
+				const offsetX = (1 - width) * -0.5 + 0.1;
+				const offsetY = 1 - height - 0.08;
+
+				if (i == petGifCache.length) petGifCache.push(await Canvas.loadImage(path.resolve(__dirname, `./imgs/noted/noted${i}.gif`)));
 
 				ctx.drawImage(avatar, options.resolution * offsetX, options.resolution * offsetY, options.resolution * width, options.resolution * height);
 				ctx.drawImage(petGifCache[i], 0, 0, options.resolution, options.resolution);
