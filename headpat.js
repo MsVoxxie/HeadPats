@@ -230,8 +230,8 @@ client.on('interactionCreate', async (interaction) => {
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 				}
 
-				const width = 0.9;
-				const height = 0.9;
+				const width = 0.8;
+				const height = 0.8;
 				const offsetX = (1 - width) * -0.5 + 0.1;
 				const offsetY = 1 - height - 0.08;
 
